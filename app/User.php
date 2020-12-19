@@ -8,14 +8,11 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+
     use Notifiable;
 
     protected $fillable = [
-        'nombres', 'email', 'password','cedula','telefono'
-    ];
-
-    protected $hidden = [
-        'password',
+        'nombres', 'email','cedula','telefono'
     ];
 
     public function wallet(){
@@ -25,4 +22,5 @@ class User extends Authenticatable
     public function payments(){
         return $this->hasMany(Payment::class);
     }
+
 }

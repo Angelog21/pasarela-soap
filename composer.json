@@ -12,9 +12,9 @@
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^6.3.1|^7.0.1",
+        "laminas/laminas-soap": "^2.8",
         "laravel/framework": "^7.29",
-        "laravel/tinker": "^2.5",
-        "viewflex/zoap": "^1.0"
+        "laravel/tinker": "^2.5"
     },
     "require-dev": {
         "facade/ignition": "^2.0",
@@ -39,7 +39,8 @@
         },
         "classmap": [
             "database/seeds",
-            "database/factories"
+            "database/factories",
+            "/vendor/laminas/laminas-soap/src/AutoDiscover.php"
         ]
     },
     "autoload-dev": {
