@@ -39,8 +39,7 @@
         },
         "classmap": [
             "database/seeds",
-            "database/factories",
-            "/vendor/laminas/laminas-soap/src/AutoDiscover.php"
+            "database/factories"
         ]
     },
     "autoload-dev": {

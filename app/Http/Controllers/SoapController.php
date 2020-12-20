@@ -6,50 +6,43 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Wallet;
 use SoapClient;
+use Spatie\ArrayToXml\ArrayToXml;
 
 class SoapController extends Controller
 {
     public function client(){
-        if (isset($_GET['wsdl'])) {
-            $autodiscover = new \Laminas\Soap\AutoDiscover();
-            $autodiscover
-                ->addFunction(ClientSp::class)
-                ->setUri('http://localhost:8000/client');
-
+        if($_SERVER['REQUEST_METHOD'] == 'GET'){
+            if (isset($_GET['wsdl'])) {
+                $autodiscover = new \Laminas\Soap\AutoDiscover();
+                $autodiscover
+                    ->setClass(ClientSp::class)
+                    ->setUri('http://pasarela-soap.test/client');
+                    // Emit the XML:
                 header('Content-type: application/xml');
-                // Emit the XML:
-                echo $autodiscover->toXML();
-            exit;
-        }else{
-            header('HTTP/1.1 400 Client Error');
-            return;
+                return $autodiscover->toXml();
+            }
         }
-        
 
-        $soap = new Laminas\Soap\Server("http://localhost:8000/client?wsdl");
+        $soap = new \SoapServer("http://pasarela-soap.test/client?wsdl");
         $soap->setClass(ClientSp::class);
         $soap->handle();
     }
 
     public function wallet(){
-        if (isset($_GET['wsdl'])) {
-            $autodiscover = new \Laminas\Soap\AutoDiscover();
-            $autodiscover
-                ->addFunction(ClientSp::class)
-                ->setUri('http://localhost:8000/wallet');
-
+        if($_SERVER['REQUEST_METHOD'] == 'GET'){
+            if (isset($_GET['wsdl'])) {
+                $autodiscover = new \Laminas\Soap\AutoDiscover();
+                $autodiscover
+                    ->setClass(WalletSp::class)
+                    ->setUri('http://pasarela-soap.test/wallet');
+                    // Emit the XML:
                 header('Content-type: application/xml');
-                // Emit the XML:
-                echo $autodiscover->toXML();
-            return;
-        }else{
-            header('HTTP/1.1 400 Client Error');
-            return;
+                return $autodiscover->toXml();
+            }
         }
-        
 
-        $soap = new Laminas\Soap\Server("http://localhost:8000/client?wsdl");
-        $soap->setClass(ClientSp::class);
+        $soap = new \SoapServer("http://pasarela-soap.test/wallet?wsdl");
+        $soap->setClass(WalletSp::class);
         $soap->handle();
     }
 }
@@ -75,7 +68,7 @@ class ClientSp {
             $user->email = $email;
             $user->nombres = $nombres;
             $user->cedula = $cedula;
-            $user->celular = $celular;
+            $user->telefono = $celular;
     
             $user->save();
 
@@ -105,33 +98,44 @@ class WalletSp {
     public function recharge($cedula,$celular,$monto)
     {
         if(!$cedula || !$celular || !$monto){
-            return ["error"=>true, "message"=>"faltan parametros para poder realizar la recarga."];
+            return json_encode(["error"=>true, "message"=>"faltan parametros para poder realizar la recarga."]);
         }
 
         if($monto <= 0){
-            return ["error"=>true, "message"=>"el monto a recargar debe ser mayor a 0."];
+            return json_encode(["error"=>true, "message"=>"el monto a recargar debe ser mayor a 0."]);
         }
 
-        $user = User::where('cedula',$cedula)->where('celular',$celular)->with('wallet')->get();
+        $user = User::where('cedula',$cedula)->where('telefono',$celular)->with('wallet')->get();
         if($user->isEmpty()){
 
-            return ["error"=>true, "message"=>"No existe un cliente con ese documento ni el celular"];
+            return json_encode(["error"=>true, "message"=>"No existe un cliente con ese documento ni el celular"]);
 
         }else{
-            $wallet = $user->wallet;
+            $wallet = $user[0]->wallet;
 
             $wallet->saldo += $monto;
     
             $wallet->save();
 
             if($wallet->save()){
-                return ["error"=>false, "message"=>"Se ha recargado el saldo correctamente"];
+                return json_encode(["error"=>false, "message"=>"Se ha recargado el saldo correctamente"]);
             }
         }
     }
 
-    public function index()
+    public function search($cedula,$celular)
     {
-        return User::get();
+        if(!$cedula && !$celular){
+            return json_encode(["error"=>true, "message"=>"faltan parametros para poder realizar la consulta."]);
+        }
+
+        $client = User::where('cedula',$cedula)->where('telefono',$celular)->with('wallet')->get();
+
+        if($client->isEmpty()){
+            return json_encode(["error"=>true, "message"=>"No se encontro el cliente con los datos indicados."]);
+        }
+
+        return ["error"=>false, "data"=>$client];
+
     }
 }

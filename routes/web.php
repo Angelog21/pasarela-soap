@@ -17,4 +17,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('/client', 'SoapController@client');
 Route::get('/client', 'SoapController@client');
+
+Route::post('/wallet', 'SoapController@wallet');
+Route::get('/wallet', 'SoapController@wallet');
