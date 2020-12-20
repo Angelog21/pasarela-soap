@@ -22,3 +22,6 @@ Route::get('/client', 'SoapController@client');
 
 Route::post('/wallet', 'SoapController@wallet');
 Route::get('/wallet', 'SoapController@wallet');
+
+Route::post('/payment', 'SoapController@payment');
+Route::get('/payment', 'SoapController@payment');

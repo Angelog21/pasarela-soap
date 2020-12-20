@@ -21,6 +21,7 @@ class CreatePaymentsTable extends Migration
             $table->string('session_id');
             $table->string('descripcion');
             $table->string('monto');
+            $table->boolean('pagado');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
