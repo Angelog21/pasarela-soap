@@ -228,9 +228,9 @@ class PaymentSp {
             $payment->pagado = false;
             $payment->save();
 
-            $payment = Payment::where('user_id',$user[0]->id)->where('pagado',false)->get();
-            if(!$payment->isEmpty()){
-                \Mail::to($user[0]->email)->send(new CodeMailVerification($payment[0]));
+            $payment = Payment::where('user_id',$user[0]->id)->where('pagado',false)->latest('id')->first();
+            if($payment){
+                \Mail::to($user[0]->email)->send(new CodeMailVerification($payment));
                 return json_encode(["error"=>false, "message"=>"Debe ingresar al correo electronico ingresado para verificar el codigo"]);
                 
             }else{
