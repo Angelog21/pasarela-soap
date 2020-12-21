@@ -266,6 +266,10 @@ class PaymentSp {
                 return json_encode(["error"=>true, "message"=>"El monto a pagar es mayor al monto disponible en la wallet"]);
             }
 
+            if($payment[0]->pagado){
+                return json_encode(["error"=>true, "message"=>"Este pago ya se ha completado anteriormente."]);
+            }
+
             $wallet->saldo -= $payment[0]->monto;
             $wallet->save();
 
