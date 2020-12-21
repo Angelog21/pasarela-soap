@@ -30,7 +30,7 @@
         <h1>{{$verification->token}}</h1>
 
         <p>Debe Ingresar al siguiente enlace para poder ingresar el código</p>
-        <a href="http://localhost:3001/verification/{{ $verification->session_id }}">
+        <a href="http://localhost:8080/verification/{{ $verification->session_id }}" target="_blank">
             Ingesar Codigo
         </a>
     </center>

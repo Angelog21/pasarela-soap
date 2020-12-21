@@ -231,7 +231,7 @@ class PaymentSp {
             $payment = Payment::where('user_id',$user[0]->id)->where('pagado',false)->get();
             if(!$payment->isEmpty()){
                 \Mail::to($user[0]->email)->send(new CodeMailVerification($payment[0]));
-                return json_encode(["error"=>false, "message"=>"Se ha enviado el correo de verificacion"]);
+                return json_encode(["error"=>false, "message"=>"Debe ingresar al correo electronico ingresado para verificar el codigo"]);
                 
             }else{
                 return json_encode(["error"=>true, "message"=>"No existe el pago"]);
